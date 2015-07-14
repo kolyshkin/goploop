@@ -6,6 +6,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"io/ioutil"
 	"os"
+	"os/exec"
 	"testing"
 )
 
@@ -15,6 +16,8 @@ var (
 	d        Ploop
 	snap     string
 )
+
+const baseDelta = "root.hdd"
 
 func TestPrepare(t *testing.T) {
 	var err error
@@ -59,6 +62,7 @@ func TestCreate(t *testing.T) {
 		t.Fatalf("humanize.ParseBytes: can't parse %s: %s", size, e)
 	}
 	p.size = s
+	p.file = baseDelta
 
 	e = Create(&p)
 	if e != nil {
@@ -116,6 +120,35 @@ func TestSnapshot(t *testing.T) {
 	snap = uuid
 }
 
+func copyFile(src, dst string) error {
+
+	cmd := exec.Command("cp", "-a", src, dst)
+	err := cmd.Run()
+
+	return err
+}
+
+func testReplace(t *testing.T) {
+	var p ReplaceParam
+	newDelta := baseDelta + ".new"
+	e := copyFile(baseDelta, newDelta)
+	if e != nil {
+		t.Fatalf("copyFile: %s", e)
+	}
+
+	p.file = newDelta
+	p.curFile = baseDelta
+	p.flags = keepName
+	e = Replace(d, &p)
+	if e != nil {
+		t.Fatalf("Replace: %s", e)
+	}
+}
+
+func TestReplaceOnline(t *testing.T) {
+	testReplace(t)
+}
+
 func TestSnapshotDelete(t *testing.T) {
 	e := DeleteSnapshot(d, snap)
 	if e != nil {
@@ -141,6 +174,10 @@ func TestSnapshotOffline(t *testing.T) {
 	}
 
 	snap = uuid
+}
+
+func TestReplaceOffline(t *testing.T) {
+	testReplace(t)
 }
 
 func TestSnapshotSwitch(t *testing.T) {

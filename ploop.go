@@ -189,6 +189,51 @@ func DeleteSnapshot(d Ploop, uuid string) error {
 	return mkerr(ret)
 }
 
+type ReplaceFlag int
+
+// Possible values for ReplaceParam.flags
+const (
+	// keepName renames the new file to old file name after replace;
+	// note that if this option is used the old file is removed.
+	keepName ReplaceFlag = C.PLOOP_REPLACE_KEEP_NAME
+)
+
+// ReplaceParam is a set of parameters to Replace()
+type ReplaceParam struct {
+	file string // new image file name
+	// Image to be replaced is specified by either
+	// uuid, current file name, or level,
+	// in the above order of preference.
+	uuid    string
+	curFile string
+	level   int
+	flags   ReplaceFlag
+}
+
+// Replace replaces a ploop image to a different (but identical) one
+func Replace(d Ploop, p *ReplaceParam) error {
+	var a C.struct_ploop_replace_param
+
+	a.file = C.CString(p.file)
+	defer cfree(a.file)
+
+	if p.uuid != "" {
+		a.guid = C.CString(p.uuid)
+		defer cfree(a.guid)
+	} else if p.curFile != "" {
+		a.cur_file = C.CString(p.curFile)
+		defer cfree(a.cur_file)
+	} else {
+		a.level = C.int(p.level)
+	}
+
+	a.flags = C.int(p.flags)
+
+	ret := C.ploop_replace_image(d.d, &a)
+
+	return mkerr(ret)
+}
+
 // FSInfoData holds information about ploop inner file system
 type FSInfoData struct {
 	blocksize   uint64
