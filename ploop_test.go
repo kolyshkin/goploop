@@ -51,7 +51,7 @@ func TestUuid(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-	size := "5G"
+	size := "512M"
 	var p CreateParam
 
 	s, e := humanize.ParseBytes(size)
@@ -93,7 +93,7 @@ func TestMount(t *testing.T) {
 }
 
 func TestOnlineDownsize(t *testing.T) {
-	size := "3G"
+	size := "384M"
 	s, e := humanize.ParseBytes(size)
 	if e != nil {
 		t.Fatalf("humanize.ParseBytes: can't parse %s: %s", size, e)
