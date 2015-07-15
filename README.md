@@ -19,6 +19,7 @@ Ploop is implemented in the kernel and is currently available in OpenVZ RHEL6 an
 ## Prerequisites
 
 You need to have
+* ext4 formatted partition (note RHEL/CentOS 7 installer uses xfs by default, that won't work!)
 * ploop-enabled kernel installed
 * ploop kernel modules loaded
 * ploop-lib and ploop-devel packages installed
