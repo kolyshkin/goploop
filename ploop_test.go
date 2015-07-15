@@ -54,7 +54,7 @@ func TestUuid(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
-	size := "512M"
+	size := "384M"
 	var p CreateParam
 
 	s, e := humanize.ParseBytes(size)
@@ -96,17 +96,27 @@ func TestMount(t *testing.T) {
 	}
 }
 
-func TestOnlineDownsize(t *testing.T) {
-	size := "384M"
+func resize(t *testing.T, size string, offline bool) {
+	if offline && testing.Short() {
+		t.Skip("skipping offline resize test in short mode.")
+	}
 	s, e := humanize.ParseBytes(size)
 	if e != nil {
 		t.Fatalf("humanize.ParseBytes: can't parse %s: %s", size, e)
 	}
 
-	e = Resize(d, s, false)
+	e = Resize(d, s, offline)
 	if e != nil {
 		t.Fatalf("Resize to %s (%d) failed: %s", size, s, e)
 	}
+}
+
+func TestResizeOnlineShrink(t *testing.T) {
+	resize(t, "256MB", false)
+}
+
+func TestResizeOnlineGrow(t *testing.T) {
+	resize(t, "512MB", false)
 }
 
 func TestSnapshot(t *testing.T) {
@@ -163,6 +173,18 @@ func TestUmount(t *testing.T) {
 	if e != nil {
 		t.Fatalf("Umount: %s", e)
 	}
+}
+
+func TestResizeOfflineShrink(t *testing.T) {
+	resize(t, "256MB", true)
+}
+
+func TestResizeOfflineGrow(t *testing.T) {
+	resize(t, "512MB", true)
+}
+
+func TestResizeOfflineShrinkAgain(t *testing.T) {
+	resize(t, "256MB", true)
 }
 
 func TestSnapshotOffline(t *testing.T) {
