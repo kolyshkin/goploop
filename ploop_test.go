@@ -88,7 +88,7 @@ func TestMount(t *testing.T) {
 	}
 
 	p := MountParam{Target: mnt}
-	dev, e := Mount(d, &p)
+	dev, e := d.Mount(&p)
 	if e != nil {
 		t.Fatalf("Open: %s", e)
 	} else {
@@ -105,7 +105,7 @@ func resize(t *testing.T, size string, offline bool) {
 		t.Fatalf("humanize.ParseBytes: can't parse %s: %s", size, e)
 	}
 
-	e = Resize(d, s, offline)
+	e = d.Resize(s, offline)
 	if e != nil {
 		t.Fatalf("Resize to %s (%d) failed: %s", size, s, e)
 	}
@@ -120,7 +120,7 @@ func TestResizeOnlineGrow(t *testing.T) {
 }
 
 func TestSnapshot(t *testing.T) {
-	uuid, e := Snapshot(d)
+	uuid, e := d.Snapshot()
 	if e != nil {
 		t.Fatalf("Snapshot: %s", e)
 	} else {
@@ -149,7 +149,7 @@ func testReplace(t *testing.T) {
 	p.File = newDelta
 	p.CurFile = baseDelta
 	p.Flags = KeepName
-	e = Replace(d, &p)
+	e = d.Replace(&p)
 	if e != nil {
 		t.Fatalf("Replace: %s", e)
 	}
@@ -160,7 +160,7 @@ func TestReplaceOnline(t *testing.T) {
 }
 
 func TestSnapshotDelete(t *testing.T) {
-	e := DeleteSnapshot(d, snap)
+	e := d.DeleteSnapshot(snap)
 	if e != nil {
 		t.Fatalf("DeleteSnapshot: %s", e)
 	} else {
@@ -169,7 +169,7 @@ func TestSnapshotDelete(t *testing.T) {
 }
 
 func TestUmount(t *testing.T) {
-	e := Umount(d)
+	e := d.Umount()
 	if e != nil {
 		t.Fatalf("Umount: %s", e)
 	}
@@ -188,7 +188,7 @@ func TestResizeOfflineShrinkAgain(t *testing.T) {
 }
 
 func TestSnapshotOffline(t *testing.T) {
-	uuid, e := Snapshot(d)
+	uuid, e := d.Snapshot()
 	if e != nil {
 		t.Fatalf("Snapshot: %s", e)
 	} else {
@@ -203,7 +203,7 @@ func TestReplaceOffline(t *testing.T) {
 }
 
 func TestSnapshotSwitch(t *testing.T) {
-	e := SwitchSnapshot(d, snap)
+	e := d.SwitchSnapshot(snap)
 	if e != nil {
 		t.Fatalf("SwitchSnapshot: %s", e)
 	} else {
@@ -242,7 +242,7 @@ func TestFSInfo(t *testing.T) {
 }
 
 func TestImageInfo(t *testing.T) {
-	i, e := ImageInfo(d)
+	i, e := d.ImageInfo()
 	if e != nil {
 		t.Errorf("ImageInfo: %v", e)
 	} else {
@@ -256,7 +256,7 @@ func TestImageInfo(t *testing.T) {
 
 // TestCleanup is the last test, removing files created by previous tests
 func TestCleanup(t *testing.T) {
-	Close(d)
+	d.Close()
 	os.Chdir(old_pwd)
 	os.RemoveAll(test_dir)
 }

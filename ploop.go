@@ -49,7 +49,7 @@ func Open(file string) (Ploop, error) {
 }
 
 // Close closes a ploop disk descriptor when it is no longer needed
-func Close(d Ploop) {
+func (d Ploop) Close() {
 	C.ploop_close_dd(d.d)
 }
 
@@ -101,7 +101,7 @@ type MountParam struct {
 }
 
 // Mount creates a ploop device and (optionally) mounts it
-func Mount(d Ploop, p *MountParam) (string, error) {
+func (d Ploop) Mount(p *MountParam) (string, error) {
 	var a C.struct_ploop_mount_param
 	var device string
 
@@ -132,14 +132,14 @@ func Mount(d Ploop, p *MountParam) (string, error) {
 }
 
 // Umount unmounts the ploop filesystem and dismantles the device
-func Umount(d Ploop) error {
+func (d Ploop) Umount() error {
 	ret := C.ploop_umount_image(d.d)
 
 	return mkerr(ret)
 }
 
 // Resize changes the ploop size. Online resize is recommended.
-func Resize(d Ploop, size uint64, offline bool) error {
+func (d Ploop) Resize(size uint64, offline bool) error {
 	var p C.struct_ploop_resize_param
 
 	p.size = convertSize(size)
@@ -150,7 +150,7 @@ func Resize(d Ploop, size uint64, offline bool) error {
 }
 
 // Snapshot creates a ploop snapshot, returning its uuid
-func Snapshot(d Ploop) (string, error) {
+func (d Ploop) Snapshot() (string, error) {
 	var p C.struct_ploop_snapshot_param
 	var uuid, err = Uuid()
 	if err != nil {
@@ -168,7 +168,7 @@ func Snapshot(d Ploop) (string, error) {
 }
 
 // SwitchSnapshot makes a specified snapshot a top one, losing the old one.
-func SwitchSnapshot(d Ploop, uuid string) error {
+func (d Ploop) SwitchSnapshot(uuid string) error {
 	var p C.struct_ploop_snapshot_switch_param
 
 	p.guid = C.CString(uuid)
@@ -180,7 +180,7 @@ func SwitchSnapshot(d Ploop, uuid string) error {
 }
 
 // DeleteSnapshot deletes a snapshot (merging it down if necessary)
-func DeleteSnapshot(d Ploop, uuid string) error {
+func (d Ploop) DeleteSnapshot(uuid string) error {
 	cuuid := C.CString(uuid)
 	defer cfree(cuuid)
 
@@ -211,7 +211,7 @@ type ReplaceParam struct {
 }
 
 // Replace replaces a ploop image to a different (but identical) one
-func Replace(d Ploop, p *ReplaceParam) error {
+func (d Ploop) Replace(p *ReplaceParam) error {
 	var a C.struct_ploop_replace_param
 
 	a.file = C.CString(p.File)
@@ -270,7 +270,7 @@ type ImageInfoData struct {
 }
 
 // ImageInfo gets information about a ploop image
-func ImageInfo(d Ploop) (ImageInfoData, error) {
+func (d Ploop) ImageInfo() (ImageInfoData, error) {
 	var cinfo C.struct_ploop_spec
 	var info ImageInfoData
 
