@@ -61,8 +61,8 @@ func TestCreate(t *testing.T) {
 	if e != nil {
 		t.Fatalf("humanize.ParseBytes: can't parse %s: %s", size, e)
 	}
-	p.size = s
-	p.file = baseDelta
+	p.Size = s
+	p.File = baseDelta
 
 	e = Create(&p)
 	if e != nil {
@@ -87,7 +87,7 @@ func TestMount(t *testing.T) {
 		t.Fatalf("os.Mkdir: %s", e)
 	}
 
-	p := MountParam{target: mnt}
+	p := MountParam{Target: mnt}
 	dev, e := Mount(d, &p)
 	if e != nil {
 		t.Fatalf("Open: %s", e)
@@ -146,9 +146,9 @@ func testReplace(t *testing.T) {
 		t.Fatalf("copyFile: %s", e)
 	}
 
-	p.file = newDelta
-	p.curFile = baseDelta
-	p.flags = KeepName
+	p.File = newDelta
+	p.CurFile = baseDelta
+	p.Flags = KeepName
 	e = Replace(d, &p)
 	if e != nil {
 		t.Fatalf("Replace: %s", e)
@@ -217,12 +217,12 @@ func TestFSInfo(t *testing.T) {
 	if e != nil {
 		t.Errorf("FSInfo: %v", e)
 	} else {
-		bTotal := i.blocks * i.blocksize
-		bAvail := i.blocks_free * i.blocksize
+		bTotal := i.Blocks * i.Blocksize
+		bAvail := i.Blocks_free * i.Blocksize
 		bUsed := bTotal - bAvail
 
-		iTotal := i.inodes
-		iAvail := i.inodes_free
+		iTotal := i.Inodes
+		iAvail := i.Inodes_free
 		iUsed := iTotal - iAvail
 
 		t.Logf("\n             Size       Used      Avail Use%%\n%7s %9s %10s %10s %3d%%\n%7s %9d %10d %10d %3d%%",
@@ -247,9 +247,9 @@ func TestImageInfo(t *testing.T) {
 		t.Errorf("ImageInfo: %v", e)
 	} else {
 		t.Logf("\n              Blocks  Blocksize       Size  Ver\n%20d %10d %10s %4d",
-			i.blocks, i.blocksize,
-			humanize.Bytes(512*i.blocks),
-			i.version)
+			i.Blocks, i.Blocksize,
+			humanize.Bytes(512*i.Blocks),
+			i.Version)
 	}
 
 }
