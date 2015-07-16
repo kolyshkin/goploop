@@ -148,7 +148,7 @@ func testReplace(t *testing.T) {
 
 	p.file = newDelta
 	p.curFile = baseDelta
-	p.flags = keepName
+	p.flags = KeepName
 	e = Replace(d, &p)
 	if e != nil {
 		t.Fatalf("Replace: %s", e)

@@ -7,9 +7,9 @@ import "C"
 
 // Possible SetVerboseLevel arguments
 const (
-	noconsole  = C.PLOOP_LOG_NOCONSOLE
-	nostdout   = C.PLOOP_LOG_NOSTDOUT
-	timestamps = C.PLOOP_LOG_TIMESTAMPS
+	NoConsole  = C.PLOOP_LOG_NOCONSOLE
+	NoStdout   = C.PLOOP_LOG_NOSTDOUT
+	Timestamps = C.PLOOP_LOG_TIMESTAMPS
 )
 
 // SetVerboseLevel sets a level of verbosity when logging to stdout/stderr
@@ -57,9 +57,9 @@ type ImageMode int
 
 // Possible values for CreateParam.ImageMode
 const (
-	expanded     ImageMode = C.PLOOP_EXPANDED_MODE
-	preallocated ImageMode = C.PLOOP_EXPANDED_PREALLOCATED_MODE
-	raw          ImageMode = C.PLOOP_RAW_MODE
+	Expanded     ImageMode = C.PLOOP_EXPANDED_MODE
+	Preallocated ImageMode = C.PLOOP_EXPANDED_PREALLOCATED_MODE
+	Raw          ImageMode = C.PLOOP_RAW_MODE
 )
 
 // CreateParam is a set of parameters for a newly created ploop
@@ -193,9 +193,9 @@ type ReplaceFlag int
 
 // Possible values for ReplaceParam.flags
 const (
-	// keepName renames the new file to old file name after replace;
+	// KeepName renames the new file to old file name after replace;
 	// note that if this option is used the old file is removed.
-	keepName ReplaceFlag = C.PLOOP_REPLACE_KEEP_NAME
+	KeepName ReplaceFlag = C.PLOOP_REPLACE_KEEP_NAME
 )
 
 // ReplaceParam is a set of parameters to Replace()
