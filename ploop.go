@@ -7,9 +7,9 @@ import "C"
 
 // Possible SetVerboseLevel arguments
 const (
-	noconsole  = C.PLOOP_LOG_NOCONSOLE
-	nostdout   = C.PLOOP_LOG_NOSTDOUT
-	timestamps = C.PLOOP_LOG_TIMESTAMPS
+	NoConsole  = C.PLOOP_LOG_NOCONSOLE
+	NoStdout   = C.PLOOP_LOG_NOSTDOUT
+	Timestamps = C.PLOOP_LOG_TIMESTAMPS
 )
 
 // SetVerboseLevel sets a level of verbosity when logging to stdout/stderr
@@ -55,18 +55,18 @@ func Close(d Ploop) {
 
 type ImageMode int
 
-// Possible values for CreateParam.ImageMode
+// Possible values for ImageMode
 const (
-	expanded     ImageMode = C.PLOOP_EXPANDED_MODE
-	preallocated ImageMode = C.PLOOP_EXPANDED_PREALLOCATED_MODE
-	raw          ImageMode = C.PLOOP_RAW_MODE
+	Expanded     ImageMode = C.PLOOP_EXPANDED_MODE
+	Preallocated ImageMode = C.PLOOP_EXPANDED_PREALLOCATED_MODE
+	Raw          ImageMode = C.PLOOP_RAW_MODE
 )
 
 // CreateParam is a set of parameters for a newly created ploop
 type CreateParam struct {
-	size uint64 // image size, in kilobytes (FS size is about 10% smaller)
-	mode ImageMode
-	file string // path to and a file name for base delta image
+	Size uint64 // image size, in kilobytes (FS size is about 10% smaller)
+	Mode ImageMode
+	File string // path to and a file name for base delta image
 }
 
 // Create creates a ploop image and its DiskDescriptor.xml
@@ -74,13 +74,13 @@ func Create(p *CreateParam) error {
 	var a C.struct_ploop_create_param
 
 	// default image file name
-	if p.file == "" {
-		p.file = "root.hdd"
+	if p.File == "" {
+		p.File = "root.hdd"
 	}
 
-	a.size = convertSize(p.size)
-	a.mode = C.int(p.mode)
-	a.image = C.CString(p.file)
+	a.size = convertSize(p.Size)
+	a.mode = C.int(p.Mode)
+	a.image = C.CString(p.File)
 	defer cfree(a.image)
 	a.fstype = C.CString("ext4")
 	defer cfree(a.fstype)
@@ -91,13 +91,13 @@ func Create(p *CreateParam) error {
 
 // MountParam is a set of parameters to pass to Mount()
 type MountParam struct {
-	uuid     string // snapshot uuid (empty for top delta)
-	target   string // mount point (empty if no mount is needed)
-	flags    int    // bit mount flags such as MS_NOATIME
-	data     string // auxiliary mount options
-	readonly bool   // mount read-only
-	fsck     bool   // do fsck before mounting inner FS
-	quota    bool   // enable quota for inner FS
+	Uuid     string // snapshot uuid (empty for top delta)
+	Target   string // mount point (empty if no mount is needed)
+	Flags    int    // bit mount flags such as MS_NOATIME
+	Data     string // auxiliary mount options
+	Readonly bool   // mount read-only
+	Fsck     bool   // do fsck before mounting inner FS
+	Quota    bool   // enable quota for inner FS
 }
 
 // Mount creates a ploop device and (optionally) mounts it
@@ -105,23 +105,23 @@ func Mount(d Ploop, p *MountParam) (string, error) {
 	var a C.struct_ploop_mount_param
 	var device string
 
-	if p.uuid != "" {
-		a.guid = C.CString(p.uuid)
+	if p.Uuid != "" {
+		a.guid = C.CString(p.Uuid)
 		defer cfree(a.guid)
 	}
-	if p.target != "" {
-		a.target = C.CString(p.target)
+	if p.Target != "" {
+		a.target = C.CString(p.Target)
 		defer cfree(a.target)
 	}
 
 	// mount_data should not be NULL
-	a.mount_data = C.CString(p.data)
+	a.mount_data = C.CString(p.Data)
 	defer cfree(a.mount_data)
 
-	a.flags = C.int(p.flags)
-	a.ro = bool2cint(p.readonly)
-	a.fsck = bool2cint(p.fsck)
-	a.quota = bool2cint(p.quota)
+	a.flags = C.int(p.Flags)
+	a.ro = bool2cint(p.Readonly)
+	a.fsck = bool2cint(p.Fsck)
+	a.quota = bool2cint(p.Quota)
 
 	ret := C.ploop_mount_image(d.d, &a)
 	if ret == 0 {
@@ -193,41 +193,41 @@ type ReplaceFlag int
 
 // Possible values for ReplaceParam.flags
 const (
-	// keepName renames the new file to old file name after replace;
+	// KeepName renames the new file to old file name after replace;
 	// note that if this option is used the old file is removed.
-	keepName ReplaceFlag = C.PLOOP_REPLACE_KEEP_NAME
+	KeepName ReplaceFlag = C.PLOOP_REPLACE_KEEP_NAME
 )
 
 // ReplaceParam is a set of parameters to Replace()
 type ReplaceParam struct {
-	file string // new image file name
+	File string // new image file name
 	// Image to be replaced is specified by either
 	// uuid, current file name, or level,
 	// in the above order of preference.
-	uuid    string
-	curFile string
-	level   int
-	flags   ReplaceFlag
+	Uuid    string
+	CurFile string
+	Level   int
+	Flags   ReplaceFlag
 }
 
 // Replace replaces a ploop image to a different (but identical) one
 func Replace(d Ploop, p *ReplaceParam) error {
 	var a C.struct_ploop_replace_param
 
-	a.file = C.CString(p.file)
+	a.file = C.CString(p.File)
 	defer cfree(a.file)
 
-	if p.uuid != "" {
-		a.guid = C.CString(p.uuid)
+	if p.Uuid != "" {
+		a.guid = C.CString(p.Uuid)
 		defer cfree(a.guid)
-	} else if p.curFile != "" {
-		a.cur_file = C.CString(p.curFile)
+	} else if p.CurFile != "" {
+		a.cur_file = C.CString(p.CurFile)
 		defer cfree(a.cur_file)
 	} else {
-		a.level = C.int(p.level)
+		a.level = C.int(p.Level)
 	}
 
-	a.flags = C.int(p.flags)
+	a.flags = C.int(p.Flags)
 
 	ret := C.ploop_replace_image(d.d, &a)
 
@@ -236,11 +236,11 @@ func Replace(d Ploop, p *ReplaceParam) error {
 
 // FSInfoData holds information about ploop inner file system
 type FSInfoData struct {
-	blocksize   uint64
-	blocks      uint64
-	blocks_free uint64
-	inodes      uint64
-	inodes_free uint64
+	Blocksize   uint64
+	Blocks      uint64
+	Blocks_free uint64
+	Inodes      uint64
+	Inodes_free uint64
 }
 
 // FSInfo gets info of ploop's inner file system
@@ -252,11 +252,11 @@ func FSInfo(file string) (FSInfoData, error) {
 
 	ret := C.ploop_get_info_by_descr(cfile, &cinfo)
 	if ret == 0 {
-		info.blocksize = uint64(cinfo.fs_bsize)
-		info.blocks = uint64(cinfo.fs_blocks)
-		info.blocks_free = uint64(cinfo.fs_bfree)
-		info.inodes = uint64(cinfo.fs_inodes)
-		info.inodes_free = uint64(cinfo.fs_ifree)
+		info.Blocksize = uint64(cinfo.fs_bsize)
+		info.Blocks = uint64(cinfo.fs_blocks)
+		info.Blocks_free = uint64(cinfo.fs_bfree)
+		info.Inodes = uint64(cinfo.fs_inodes)
+		info.Inodes_free = uint64(cinfo.fs_ifree)
 	}
 
 	return info, mkerr(ret)
@@ -264,9 +264,9 @@ func FSInfo(file string) (FSInfoData, error) {
 
 // ImageInfoData holds information about ploop image
 type ImageInfoData struct {
-	blocks    uint64
-	blocksize uint32
-	version   int
+	Blocks    uint64
+	Blocksize uint32
+	Version   int
 }
 
 // ImageInfo gets information about a ploop image
@@ -276,9 +276,9 @@ func ImageInfo(d Ploop) (ImageInfoData, error) {
 
 	ret := C.ploop_get_spec(d.d, &cinfo)
 	if ret == 0 {
-		info.blocks = uint64(cinfo.size)
-		info.blocksize = uint32(cinfo.blocksize)
-		info.version = int(cinfo.fmt_version)
+		info.Blocks = uint64(cinfo.size)
+		info.Blocksize = uint32(cinfo.blocksize)
+		info.Version = int(cinfo.fmt_version)
 	}
 
 	return info, mkerr(ret)
