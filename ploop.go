@@ -167,7 +167,10 @@ func (d Ploop) Snapshot() (string, error) {
 	return uuid, mkerr(ret)
 }
 
-// SwitchSnapshot makes a specified snapshot a top one, losing the old one.
+// SwitchSnapshot switches to a specified snapshot,
+// creates a new empty one on top of it, and makes it a top one
+// (i.e. the one new data will be written to).
+// Old top delta (i.e. data modified since the last snapshot) is lost.
 func (d Ploop) SwitchSnapshot(uuid string) error {
 	var p C.struct_ploop_snapshot_switch_param
 
@@ -177,6 +180,43 @@ func (d Ploop) SwitchSnapshot(uuid string) error {
 	ret := C.ploop_switch_snapshot_ex(d.d, &p)
 
 	return mkerr(ret)
+}
+
+type SwitchFlag uint
+
+// Possible values for SwitchSnapshotExtended flags argument
+const (
+	SkipDestroy SwitchFlag = C.PLOOP_SNAP_SKIP_TOPDELTA_DESTROY
+	SkipCreate  SwitchFlag = C.PLOOP_SNAP_SKIP_TOPDELTA_CREATE
+)
+
+// SwitchSnapshot switches to a specified snapshot, creates a new
+// empty one on top of it (unless SkipCreate flag is set), and
+// makes it a top one (i.e. the one new data will be written to).
+// Old top delta (i.e. data modified since the last snapshot) is lost,
+// unless the SkipDestroy flag is set -- in this case the changes
+// are saved into a new snapshot, and its uuid is returned.
+func (d Ploop) SwitchSnapshotExtended(uuid string, flags SwitchFlag) (string, error) {
+	var p C.struct_ploop_snapshot_switch_param
+	old_uuid := ""
+
+	p.guid = C.CString(uuid)
+	defer cfree(p.guid)
+
+	p.flags = C.int(flags)
+
+	if flags&SkipDestroy != 0 {
+		old_uuid, err := Uuid()
+		if err != nil {
+			return "", err
+		}
+		p.guid_old = C.CString(old_uuid)
+		defer cfree(p.guid_old)
+	}
+
+	ret := C.ploop_switch_snapshot_ex(d.d, &p)
+
+	return old_uuid, mkerr(ret)
 }
 
 // DeleteSnapshot deletes a snapshot (merging it down if necessary)
