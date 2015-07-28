@@ -155,7 +155,7 @@ func TestReplaceOnline(t *testing.T) {
 	testReplace(t)
 }
 
-func TestSnapshotDelete(t *testing.T) {
+func TestDeleteSnapshot(t *testing.T) {
 	e := d.DeleteSnapshot(snap)
 	if e != nil {
 		t.Fatalf("DeleteSnapshot: %s", e)
@@ -198,7 +198,7 @@ func TestReplaceOffline(t *testing.T) {
 	testReplace(t)
 }
 
-func TestSnapshotSwitch(t *testing.T) {
+func TestSwitchSnapshot(t *testing.T) {
 	e := d.SwitchSnapshot(snap)
 	if e != nil {
 		t.Fatalf("SwitchSnapshot: %s", e)
