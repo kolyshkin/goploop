@@ -1,5 +1,8 @@
 package ploop
 
+import "os/exec"
+import "sync"
+
 // #cgo CFLAGS: -D_GNU_SOURCE
 // #cgo LDFLAGS: -lploop -lxml2 -lrt
 // #include <ploop/libploop.h>
@@ -37,9 +40,23 @@ type Ploop struct {
 	d *C.struct_ploop_disk_images_data
 }
 
+var once sync.Once
+
+// load ploop modules
+func load_kmod() {
+	// try to load ploop modules
+	modules := []string{"ploop", "pfmt_ploop1", "pfmt_raw", "pio_direct", "pio_nfs", "pio_kaio"}
+	for _, m := range modules {
+		exec.Command("modprobe", m).Run()
+	}
+}
+
 // Open opens a ploop DiskDescriptor.xml, most ploop operations require it
 func Open(file string) (Ploop, error) {
 	var d Ploop
+
+	once.Do(load_kmod)
+
 	cfile := C.CString(file)
 	defer cfree(cfile)
 
@@ -72,6 +89,8 @@ type CreateParam struct {
 // Create creates a ploop image and its DiskDescriptor.xml
 func Create(p *CreateParam) error {
 	var a C.struct_ploop_create_param
+
+	once.Do(load_kmod)
 
 	// default image file name
 	if p.File == "" {
@@ -289,6 +308,8 @@ func FSInfo(file string) (FSInfoData, error) {
 	var info FSInfoData
 	cfile := C.CString(file)
 	defer cfree(cfile)
+
+	once.Do(load_kmod)
 
 	ret := C.ploop_get_info_by_descr(cfile, &cinfo)
 	if ret == 0 {
