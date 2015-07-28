@@ -110,7 +110,7 @@ func Create(p *CreateParam) error {
 
 // MountParam is a set of parameters to pass to Mount()
 type MountParam struct {
-	Uuid     string // snapshot uuid (empty for top delta)
+	UUID     string // snapshot uuid (empty for top delta)
 	Target   string // mount point (empty if no mount is needed)
 	Flags    int    // bit mount flags such as MS_NOATIME
 	Data     string // auxiliary mount options
@@ -124,8 +124,8 @@ func (d Ploop) Mount(p *MountParam) (string, error) {
 	var a C.struct_ploop_mount_param
 	var device string
 
-	if p.Uuid != "" {
-		a.guid = C.CString(p.Uuid)
+	if p.UUID != "" {
+		a.guid = C.CString(p.UUID)
 		defer cfree(a.guid)
 	}
 	if p.Target != "" {
@@ -171,7 +171,7 @@ func (d Ploop) Resize(size uint64, offline bool) error {
 // Snapshot creates a ploop snapshot, returning its uuid
 func (d Ploop) Snapshot() (string, error) {
 	var p C.struct_ploop_snapshot_param
-	var uuid, err = Uuid()
+	var uuid, err = UUID()
 	if err != nil {
 		return "", err
 	}
@@ -225,7 +225,7 @@ func (d Ploop) SwitchSnapshotExtended(uuid string, flags SwitchFlag) (string, er
 	p.flags = C.int(flags)
 
 	if flags&SkipDestroy != 0 {
-		old_uuid, err := Uuid()
+		old_uuid, err := UUID()
 		if err != nil {
 			return "", err
 		}
@@ -263,7 +263,7 @@ type ReplaceParam struct {
 	// Image to be replaced is specified by either
 	// uuid, current file name, or level,
 	// in the above order of preference.
-	Uuid    string
+	UUID    string
 	CurFile string
 	Level   int
 	Flags   ReplaceFlag
@@ -276,8 +276,8 @@ func (d Ploop) Replace(p *ReplaceParam) error {
 	a.file = C.CString(p.File)
 	defer cfree(a.file)
 
-	if p.Uuid != "" {
-		a.guid = C.CString(p.Uuid)
+	if p.UUID != "" {
+		a.guid = C.CString(p.UUID)
 		defer cfree(a.guid)
 	} else if p.CurFile != "" {
 		a.cur_file = C.CString(p.CurFile)
@@ -345,8 +345,8 @@ func (d Ploop) ImageInfo() (ImageInfoData, error) {
 	return info, mkerr(ret)
 }
 
-// Uuid generates a ploop UUID
-func Uuid() (string, error) {
+// UUID generates a ploop UUID
+func UUID() (string, error) {
 	var cuuid [39]C.char
 
 	ret := C.ploop_uuid_generate(&cuuid[0], 39)

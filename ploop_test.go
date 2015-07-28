@@ -44,10 +44,10 @@ func TestPrepare(t *testing.T) {
 	t.Logf("Running tests in %s", test_dir)
 }
 
-func TestUuid(t *testing.T) {
-	uuid, e := Uuid()
+func TestUUID(t *testing.T) {
+	uuid, e := UUID()
 	if e != nil {
-		t.Errorf("Uuid: %s", e)
+		t.Errorf("UUID: %s", e)
 	}
 
 	t.Logf("Got uuid %s", uuid)
