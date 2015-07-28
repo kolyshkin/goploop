@@ -187,7 +187,7 @@ func (d Ploop) Snapshot() (string, error) {
 }
 
 // SwitchSnapshot switches to a specified snapshot,
-// creates a new empty one on top of it, and makes it a top one
+// creates a new empty delta on top of it, and makes it a top one
 // (i.e. the one new data will be written to).
 // Old top delta (i.e. data modified since the last snapshot) is lost.
 func (d Ploop) SwitchSnapshot(uuid string) error {
@@ -201,20 +201,27 @@ func (d Ploop) SwitchSnapshot(uuid string) error {
 	return mkerr(ret)
 }
 
+// Possible values for SwitchSnapshotExtended flags argument
 type SwitchFlag uint
 
-// Possible values for SwitchSnapshotExtended flags argument
 const (
+	// SkipDestroy, if set, modifies the behavior of
+	// SwitchSnapshotExtended to not delete the old top delta, but
+	// make it a snapshot and return its uuid. Without this flag,
+	// old top delta (i.e. data modified since the last snapshot)
+	// is lost.
 	SkipDestroy SwitchFlag = C.PLOOP_SNAP_SKIP_TOPDELTA_DESTROY
-	SkipCreate  SwitchFlag = C.PLOOP_SNAP_SKIP_TOPDELTA_CREATE
+	// SkipCreate flag, if set, modifies the behavior of
+	// SwitchSnapshotExtended to not create a new top delta,
+	// but rather transform the specified snapshot itself to be
+	// the new top delta), so all new changes will be written
+	// right to it. Snapshot UUID is lost in this case.
+	SkipCreate SwitchFlag = C.PLOOP_SNAP_SKIP_TOPDELTA_CREATE
 )
 
-// SwitchSnapshot switches to a specified snapshot, creates a new
-// empty one on top of it (unless SkipCreate flag is set), and
-// makes it a top one (i.e. the one new data will be written to).
-// Old top delta (i.e. data modified since the last snapshot) is lost,
-// unless the SkipDestroy flag is set -- in this case the changes
-// are saved into a new snapshot, and its uuid is returned.
+// SwitchSnapshotExtended is same as SwitchSnapshot but with additional
+// flags modifying its behavior. Please see individual flags description.
+// Returns uuid of what was the old top delta if SkipDestroy flag is set.
 func (d Ploop) SwitchSnapshotExtended(uuid string, flags SwitchFlag) (string, error) {
 	var p C.struct_ploop_snapshot_switch_param
 	old_uuid := ""
