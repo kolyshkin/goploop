@@ -75,7 +75,7 @@ func TestOpen(t *testing.T) {
 
 	d, e = Open("DiskDescriptor.xml")
 	if e != nil {
-		t.Errorf("Open: %s ", e)
+		t.Errorf("Open: %s", e)
 	}
 }
 
@@ -90,7 +90,7 @@ func TestMount(t *testing.T) {
 	p := MountParam{Target: mnt}
 	dev, e := d.Mount(&p)
 	if e != nil {
-		t.Fatalf("Open: %s", e)
+		t.Fatalf("Mount: %s", e)
 	} else {
 		t.Logf("Mounted; ploop device %s", dev)
 	}
@@ -107,7 +107,7 @@ func resize(t *testing.T, size string, offline bool) {
 
 	e = d.Resize(s, offline)
 	if e != nil {
-		t.Fatalf("Resize to %s (%d) failed: %s", size, s, e)
+		t.Fatalf("Resize to %s (%d bytes) failed: %s", size, s, e)
 	}
 }
 
@@ -124,7 +124,7 @@ func TestSnapshot(t *testing.T) {
 	if e != nil {
 		t.Fatalf("Snapshot: %s", e)
 	} else {
-		t.Logf("Created online Snapshot; uuid %s", uuid)
+		t.Logf("Created online snapshot; uuid %s", uuid)
 	}
 
 	snap = uuid
@@ -188,7 +188,7 @@ func TestSnapshotOffline(t *testing.T) {
 	if e != nil {
 		t.Fatalf("Snapshot: %s", e)
 	} else {
-		t.Logf("Created offline Snapshot; uuid %s", uuid)
+		t.Logf("Created offline snapshot; uuid %s", uuid)
 	}
 
 	snap = uuid
