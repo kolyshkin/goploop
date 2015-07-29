@@ -131,7 +131,7 @@ func TestSnapshot(t *testing.T) {
 }
 
 func copyFile(src, dst string) error {
-	return exec.Command("cp", "-a", src, dst).Run
+	return exec.Command("cp", "-a", src, dst).Run()
 }
 
 func testReplace(t *testing.T) {
