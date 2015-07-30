@@ -5,7 +5,7 @@ import "C"
 import "fmt"
 
 type PloopErr struct {
-	c int
+	C int
 	s string
 }
 
@@ -104,7 +104,7 @@ var ErrCodes = []string{
 }
 
 func (e *PloopErr) Error() string {
-	return fmt.Sprintf("ploop error %d (%s): %s", e.c, ErrCodes[e.c], e.s)
+	return fmt.Sprintf("ploop error %d (%s): %s", e.C, ErrCodes[e.C], e.s)
 }
 
 func mkerr(ret C.int) error {
@@ -112,5 +112,5 @@ func mkerr(ret C.int) error {
 		return nil
 	}
 
-	return &PloopErr{c: int(ret), s: C.GoString(C.ploop_get_last_error())}
+	return &PloopErr{C: int(ret), s: C.GoString(C.ploop_get_last_error())}
 }
