@@ -5,7 +5,7 @@ import "C"
 import "fmt"
 
 type PloopErr struct {
-	C int
+	c int
 	s string
 }
 
@@ -106,16 +106,16 @@ var ErrCodes = []string{
 // Error returns a string representation of a ploop error
 func (e *PloopErr) Error() string {
 	s := "E_UNKNOWN"
-	if e.C > 0 && e.C < len(ErrCodes) {
-		s = ErrCodes[e.C]
+	if e.c > 0 && e.c < len(ErrCodes) {
+		s = ErrCodes[e.c]
 	}
 
-	return fmt.Sprintf("ploop error %d (%s): %s", e.C, s, e.s)
+	return fmt.Sprintf("ploop error %d (%s): %s", e.c, s, e.s)
 }
 
 // IsError checks if a ploop error has specified code
 func (e *PloopErr) IsError(code int) bool {
-	return e.C == code
+	return e.c == code
 }
 
 // IsNotMounted returns true if ploop error is "device is not mounted"
@@ -128,5 +128,5 @@ func mkerr(ret C.int) error {
 		return nil
 	}
 
-	return &PloopErr{C: int(ret), s: C.GoString(C.ploop_get_last_error())}
+	return &PloopErr{c: int(ret), s: C.GoString(C.ploop_get_last_error())}
 }
