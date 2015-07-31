@@ -104,7 +104,12 @@ var ErrCodes = []string{
 }
 
 func (e *PloopErr) Error() string {
-	return fmt.Sprintf("ploop error %d (%s): %s", e.C, ErrCodes[e.C], e.s)
+	s := "E_UNKNOWN"
+	if e.C > 0 && e.C < len(ErrCodes) {
+		s = ErrCodes[e.C]
+	}
+
+	return fmt.Sprintf("ploop error %d (%s): %s", e.C, s, e.s)
 }
 
 func mkerr(ret C.int) error {
