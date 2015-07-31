@@ -103,6 +103,7 @@ var ErrCodes = []string{
 	E_NOSNAP:          "E_NOSNAP",
 }
 
+// Error returns a string representation of a ploop error
 func (e *PloopErr) Error() string {
 	s := "E_UNKNOWN"
 	if e.C > 0 && e.C < len(ErrCodes) {
@@ -110,6 +111,16 @@ func (e *PloopErr) Error() string {
 	}
 
 	return fmt.Sprintf("ploop error %d (%s): %s", e.C, s, e.s)
+}
+
+// IsError checks if a ploop error has specified code
+func (e *PloopErr) IsError(code int) bool {
+	return e.C == code
+}
+
+// IsNotMounted returns true if ploop error is "device is not mounted"
+func (e *PloopErr) IsNotMounted() bool {
+	return e.IsError(E_DEV_NOT_MOUNTED)
 }
 
 func mkerr(ret C.int) error {

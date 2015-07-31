@@ -155,6 +155,16 @@ func TestReplaceOnline(t *testing.T) {
 	testReplace(t)
 }
 
+func TestSwitchSnapshotOnline(t *testing.T) {
+	e := d.SwitchSnapshot(snap)
+	// should fail with E_PARAM
+	if pe, ok := e.(*PloopErr); ok && pe.IsError(E_PARAM) {
+		t.Logf("SwitchSnapshot: (online) good, expected error")
+	} else {
+		t.Fatalf("SwitchSnapshot: (should fail): %s", e)
+	}
+}
+
 func TestDeleteSnapshot(t *testing.T) {
 	e := d.DeleteSnapshot(snap)
 	if e != nil {
@@ -167,6 +177,15 @@ func TestDeleteSnapshot(t *testing.T) {
 func TestUmount(t *testing.T) {
 	e := d.Umount()
 	if e != nil {
+		t.Fatalf("Umount: %s", e)
+	}
+}
+
+func TestUmountAgain(t *testing.T) {
+	e := d.Umount()
+	if pe, ok := e.(*PloopErr); ok && pe.IsNotMounted() {
+		t.Logf("Umount: (not mounted) good, expected error")
+	} else {
 		t.Fatalf("Umount: %s", e)
 	}
 }
