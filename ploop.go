@@ -300,6 +300,18 @@ func (d Ploop) Replace(p *ReplaceParam) error {
 	return mkerr(ret)
 }
 
+func (d Ploop) IsMounted() (bool, error) {
+	ret := C.ploop_is_mounted(d.d)
+	if ret == 0 {
+		return false, nil
+	} else if ret == 1 {
+		return true, nil
+	} else {
+		// error, but no code, make our own
+		return false, mkerr(E_SYS)
+	}
+}
+
 // FSInfoData holds information about ploop inner file system
 type FSInfoData struct {
 	Blocksize   uint64

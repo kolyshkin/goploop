@@ -185,10 +185,30 @@ func TestDeleteSnapshot(t *testing.T) {
 	}
 }
 
+func TestIsMounted1(t *testing.T) {
+	m, e := d.IsMounted()
+	if e != nil {
+		t.Fatalf("IsMounted: %s", e)
+	}
+	if !m {
+		t.Fatalf("IsMounted: unexpectedly returned false")
+	}
+}
+
 func TestUmount(t *testing.T) {
 	e := d.Umount()
 	if e != nil {
 		t.Fatalf("Umount: %s", e)
+	}
+}
+
+func TestIsMounted2(t *testing.T) {
+	m, e := d.IsMounted()
+	if e != nil {
+		t.Fatalf("IsMounted: %s", e)
+	}
+	if m {
+		t.Fatalf("IsMounted: unexpectedly returned true")
 	}
 }
 
