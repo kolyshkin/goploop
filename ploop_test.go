@@ -269,9 +269,20 @@ func TestImageInfo(t *testing.T) {
 
 }
 
+func cleanup() {
+	if d.d != nil {
+		d.Umount()
+		d.Close()
+	}
+	if old_pwd != "" {
+		os.Chdir(old_pwd)
+	}
+	if test_dir != "" {
+		os.RemoveAll(test_dir)
+	}
+}
+
 // TestCleanup is the last test, removing files created by previous tests
 func TestCleanup(t *testing.T) {
-	d.Close()
-	os.Chdir(old_pwd)
-	os.RemoveAll(test_dir)
+	cleanup()
 }
