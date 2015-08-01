@@ -3,6 +3,8 @@ package ploop
 // A test suite, also serving as an example of how to use the package
 
 import (
+	"bufio"
+	"fmt"
 	"github.com/dustin/go-humanize"
 	"io/ioutil"
 	"os"
@@ -19,23 +21,35 @@ var (
 
 const baseDelta = "root.hdd"
 
+// abort is used when the tests after the current one
+// can't be run as one of their prerequisite(s) failed
+func abort(format string, args ...interface{}) {
+	s := fmt.Sprintf("ABORT: "+format+"\n", args...)
+	f := bufio.NewWriter(os.Stderr)
+	f.Write([]byte(s))
+	f.Flush()
+	cleanup()
+	os.Exit(1)
+}
+
+// Check for a fatal error, call abort() if it is
+func chk(err error) {
+	if err != nil {
+		abort("%s", err)
+	}
+}
+
 func TestPrepare(t *testing.T) {
 	var err error
 
 	old_pwd, err = os.Getwd()
-	if err != nil {
-		t.Fatalf("Getwd: %s", err)
-	}
+	chk(err)
 
 	test_dir, err = ioutil.TempDir(old_pwd, "tmp-test")
-	if err != nil {
-		t.Fatalf("TempDir %q: %s", old_pwd, err)
-	}
+	chk(err)
 
 	err = os.Chdir(test_dir)
-	if err != nil {
-		t.Fatalf("Chdir %q: %s", test_dir, err)
-	}
+	chk(err)
 
 	SetVerboseLevel(255)
 	SetLogLevel(1)
@@ -59,14 +73,14 @@ func TestCreate(t *testing.T) {
 
 	s, e := humanize.ParseBytes(size)
 	if e != nil {
-		t.Fatalf("humanize.ParseBytes: can't parse %s: %s", size, e)
+		abort("humanize.ParseBytes: can't parse %s: %s", size, e)
 	}
 	p.Size = s
 	p.File = baseDelta
 
 	e = Create(&p)
 	if e != nil {
-		t.Fatalf("Create: %s", e)
+		abort("Create: %s", e)
 	}
 }
 
@@ -75,7 +89,7 @@ func TestOpen(t *testing.T) {
 
 	d, e = Open("DiskDescriptor.xml")
 	if e != nil {
-		t.Errorf("Open: %s", e)
+		abort("Open: %s", e)
 	}
 }
 
@@ -83,17 +97,15 @@ func TestMount(t *testing.T) {
 	mnt := "mnt"
 
 	e := os.Mkdir(mnt, 0755)
-	if e != nil {
-		t.Fatalf("os.Mkdir: %s", e)
-	}
+	chk(e)
 
 	p := MountParam{Target: mnt}
 	dev, e := d.Mount(&p)
 	if e != nil {
-		t.Fatalf("Mount: %s", e)
-	} else {
-		t.Logf("Mounted; ploop device %s", dev)
+		abort("Mount: %s", e)
 	}
+
+	t.Logf("Mounted; ploop device %s", dev)
 }
 
 func resize(t *testing.T, size string, offline bool) {
@@ -122,11 +134,10 @@ func TestResizeOnlineGrow(t *testing.T) {
 func TestSnapshot(t *testing.T) {
 	uuid, e := d.Snapshot()
 	if e != nil {
-		t.Fatalf("Snapshot: %s", e)
-	} else {
-		t.Logf("Created online snapshot; uuid %s", uuid)
+		abort("Snapshot: %s", e)
 	}
 
+	t.Logf("Created online snapshot; uuid %s", uuid)
 	snap = uuid
 }
 
