@@ -365,6 +365,21 @@ func (d Ploop) ImageInfo() (ImageInfoData, error) {
 	return info, mkerr(ret)
 }
 
+// TopDeltaFile returns file name of top delta
+func (d Ploop) TopDeltaFile() (string, error) {
+	const len = 4096 // PATH_MAX
+	var out [len]C.char
+
+	ret := C.ploop_get_top_delta_fname(d.d, &out[0], len)
+	if ret != 0 {
+		// error, but no code, make our own
+		return "", mkerr(E_SYS)
+	}
+
+	file := C.GoString(&out[0])
+	return file, nil
+}
+
 // UUID generates a ploop UUID
 func UUID() (string, error) {
 	var cuuid [39]C.char

@@ -141,6 +141,14 @@ func TestSnapshot(t *testing.T) {
 	snap = uuid
 }
 
+func TestTopDeltaFile(t *testing.T) {
+	f, e := d.TopDeltaFile()
+	if e != nil {
+		t.Fatalf("TopDeltaFile: %s", e)
+	}
+	t.Logf("Got TopDeltaFile %s", f)
+}
+
 func copyFile(src, dst string) error {
 	return exec.Command("cp", "-a", src, dst).Run()
 }
