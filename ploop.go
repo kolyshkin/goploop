@@ -300,6 +300,7 @@ func (d Ploop) Replace(p *ReplaceParam) error {
 	return mkerr(ret)
 }
 
+// IsMounted returns true if ploop is mounted
 func (d Ploop) IsMounted() (bool, error) {
 	ret := C.ploop_is_mounted(d.d)
 	if ret == 0 {
