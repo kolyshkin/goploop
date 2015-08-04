@@ -113,14 +113,15 @@ func (e *PloopErr) Error() string {
 	return fmt.Sprintf("ploop error %d (%s): %s", e.c, s, e.s)
 }
 
-// IsError checks if a ploop error has specified code
-func (e *PloopErr) IsError(code int) bool {
-	return e.c == code
+// IsError checks if an error is a specific ploop error
+func IsError(err error, code int) bool {
+	perr, ok := err.(*PloopErr)
+	return ok && perr.c == code
 }
 
-// IsNotMounted returns true if ploop error is "device is not mounted"
-func (e *PloopErr) IsNotMounted() bool {
-	return e.IsError(E_DEV_NOT_MOUNTED)
+// IsNotMounted returns true if an error is ploop "device is not mounted"
+func IsNotMounted(err error) bool {
+	return IsError(err, E_DEV_NOT_MOUNTED)
 }
 
 func mkerr(ret C.int) error {
