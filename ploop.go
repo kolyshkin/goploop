@@ -1,5 +1,6 @@
 package ploop
 
+import "strings"
 import "os/exec"
 import "sync"
 
@@ -78,6 +79,33 @@ const (
 	Preallocated ImageMode = C.PLOOP_EXPANDED_PREALLOCATED_MODE
 	Raw          ImageMode = C.PLOOP_RAW_MODE
 )
+
+// StringToImageMode converts a string to ImageMode value
+func StringToImageMode(s string) (ImageMode, error) {
+	switch strings.ToLower(s) {
+	case "expanded":
+		return Expanded, nil
+	case "preallocated":
+		return Preallocated, nil
+	case "raw":
+		return Raw, nil
+	default:
+		return Expanded, mkerr(E_PARAM)
+	}
+}
+
+// ImageModeString converts an ImageMode value to string
+func ImageModeString(m ImageMode) string {
+	switch m {
+	case Expanded:
+		return "Expanded"
+	case Preallocated:
+		return "Preallocated"
+	case Raw:
+		return "Raw"
+	}
+	return "<unknown>"
+}
 
 // CreateParam is a set of parameters for a newly created ploop
 type CreateParam struct {
