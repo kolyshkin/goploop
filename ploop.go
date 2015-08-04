@@ -84,6 +84,7 @@ type CreateParam struct {
 	Size uint64 // image size, in kilobytes (FS size is about 10% smaller)
 	Mode ImageMode
 	File string // path to and a file name for base delta image
+	CLog uint   // cluster block size log (6 to 15, default 11)
 }
 
 // Create creates a ploop image and its DiskDescriptor.xml
@@ -99,6 +100,12 @@ func Create(p *CreateParam) error {
 
 	a.size = convertSize(p.Size)
 	a.mode = C.int(p.Mode)
+	if p.CLog != 0 {
+		// ploop cluster block size, in 512-byte sectors
+		// default is 1M cluster block size (CLog=11)
+		// 2^11 = 2048 sectors, 2048*512 = 1M
+		a.blocksize = 1 << p.CLog
+	}
 	a.image = C.CString(p.File)
 	defer cfree(a.image)
 	a.fstype = C.CString("ext4")
