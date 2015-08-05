@@ -13,11 +13,10 @@ func cfree(c *C.char) {
 
 // bool2cint converts Go bool to C.int
 func bool2cint(v bool) C.int {
-	if v == true {
+	if v {
 		return 1
-	} else {
-		return 0
 	}
+	return 0
 }
 
 // convertSize converts a size in kilobytes to whatever ploop lib is using
