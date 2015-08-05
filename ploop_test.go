@@ -271,12 +271,12 @@ func TestFSInfo(t *testing.T) {
 	if e != nil {
 		t.Errorf("FSInfo: %v", e)
 	} else {
-		bTotal := i.Blocks * i.Blocksize
-		bAvail := i.Blocks_free * i.Blocksize
+		bTotal := i.Blocks * i.BlockSize
+		bAvail := i.BlocksFree * i.BlockSize
 		bUsed := bTotal - bAvail
 
 		iTotal := i.Inodes
-		iAvail := i.Inodes_free
+		iAvail := i.InodesFree
 		iUsed := iTotal - iAvail
 
 		t.Logf("\n             Size       Used      Avail Use%%\n%7s %9s %10s %10s %3d%%\n%7s %9d %10d %10d %3d%%",
@@ -301,7 +301,7 @@ func TestImageInfo(t *testing.T) {
 		t.Errorf("ImageInfo: %v", e)
 	} else {
 		t.Logf("\n              Blocks  Blocksize       Size  Ver\n%20d %10d %10s %4d",
-			i.Blocks, i.Blocksize,
+			i.Blocks, i.BlockSize,
 			humanize.Bytes(512*i.Blocks),
 			i.Version)
 	}

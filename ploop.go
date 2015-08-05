@@ -44,7 +44,7 @@ type Ploop struct {
 var once sync.Once
 
 // load ploop modules
-func load_kmod() {
+func loadKmod() {
 	// try to load ploop modules
 	modules := []string{"ploop", "pfmt_ploop1", "pfmt_raw", "pio_direct", "pio_nfs", "pio_kaio"}
 	for _, m := range modules {
@@ -56,7 +56,7 @@ func load_kmod() {
 func Open(file string) (Ploop, error) {
 	var d Ploop
 
-	once.Do(load_kmod)
+	once.Do(loadKmod)
 
 	cfile := C.CString(file)
 	defer cfree(cfile)
@@ -119,7 +119,7 @@ type CreateParam struct {
 func Create(p *CreateParam) error {
 	var a C.struct_ploop_create_param
 
-	once.Do(load_kmod)
+	once.Do(loadKmod)
 
 	// default image file name
 	if p.File == "" {
@@ -259,7 +259,7 @@ const (
 // Returns uuid of what was the old top delta if SkipDestroy flag is set.
 func (d Ploop) SwitchSnapshotExtended(uuid string, flags SwitchFlag) (string, error) {
 	var p C.struct_ploop_snapshot_switch_param
-	old_uuid := ""
+	oldUUID := ""
 
 	p.guid = C.CString(uuid)
 	defer cfree(p.guid)
@@ -267,17 +267,17 @@ func (d Ploop) SwitchSnapshotExtended(uuid string, flags SwitchFlag) (string, er
 	p.flags = C.int(flags)
 
 	if flags&SkipDestroy != 0 {
-		old_uuid, err := UUID()
+		oldUUID, err := UUID()
 		if err != nil {
 			return "", err
 		}
-		p.guid_old = C.CString(old_uuid)
+		p.guid_old = C.CString(oldUUID)
 		defer cfree(p.guid_old)
 	}
 
 	ret := C.ploop_switch_snapshot_ex(d.d, &p)
 
-	return old_uuid, mkerr(ret)
+	return oldUUID, mkerr(ret)
 }
 
 // DeleteSnapshot deletes a snapshot (merging it down if necessary)
@@ -350,11 +350,11 @@ func (d Ploop) IsMounted() (bool, error) {
 
 // FSInfoData holds information about ploop inner file system
 type FSInfoData struct {
-	Blocksize   uint64
-	Blocks      uint64
-	Blocks_free uint64
-	Inodes      uint64
-	Inodes_free uint64
+	BlockSize  uint64
+	Blocks     uint64
+	BlocksFree uint64
+	Inodes     uint64
+	InodesFree uint64
 }
 
 // FSInfo gets info of ploop's inner file system
@@ -364,15 +364,15 @@ func FSInfo(file string) (FSInfoData, error) {
 	cfile := C.CString(file)
 	defer cfree(cfile)
 
-	once.Do(load_kmod)
+	once.Do(loadKmod)
 
 	ret := C.ploop_get_info_by_descr(cfile, &cinfo)
 	if ret == 0 {
-		info.Blocksize = uint64(cinfo.fs_bsize)
+		info.BlockSize = uint64(cinfo.fs_bsize)
 		info.Blocks = uint64(cinfo.fs_blocks)
-		info.Blocks_free = uint64(cinfo.fs_bfree)
+		info.BlocksFree = uint64(cinfo.fs_bfree)
 		info.Inodes = uint64(cinfo.fs_inodes)
-		info.Inodes_free = uint64(cinfo.fs_ifree)
+		info.InodesFree = uint64(cinfo.fs_ifree)
 	}
 
 	return info, mkerr(ret)
@@ -381,7 +381,7 @@ func FSInfo(file string) (FSInfoData, error) {
 // ImageInfoData holds information about ploop image
 type ImageInfoData struct {
 	Blocks    uint64
-	Blocksize uint32
+	BlockSize uint32
 	Version   int
 }
 
@@ -393,7 +393,7 @@ func (d Ploop) ImageInfo() (ImageInfoData, error) {
 	ret := C.ploop_get_spec(d.d, &cinfo)
 	if ret == 0 {
 		info.Blocks = uint64(cinfo.size)
-		info.Blocksize = uint32(cinfo.blocksize)
+		info.BlockSize = uint32(cinfo.blocksize)
 		info.Version = int(cinfo.fmt_version)
 	}
 
