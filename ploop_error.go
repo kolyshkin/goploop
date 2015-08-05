@@ -4,7 +4,7 @@ package ploop
 import "C"
 import "fmt"
 
-type PloopErr struct {
+type Err struct {
 	c int
 	s string
 }
@@ -104,7 +104,7 @@ var ErrCodes = []string{
 }
 
 // Error returns a string representation of a ploop error
-func (e *PloopErr) Error() string {
+func (e *Err) Error() string {
 	s := "E_UNKNOWN"
 	if e.c > 0 && e.c < len(ErrCodes) {
 		s = ErrCodes[e.c]
@@ -115,7 +115,7 @@ func (e *PloopErr) Error() string {
 
 // IsError checks if an error is a specific ploop error
 func IsError(err error, code int) bool {
-	perr, ok := err.(*PloopErr)
+	perr, ok := err.(*Err)
 	return ok && perr.c == code
 }
 
@@ -129,5 +129,5 @@ func mkerr(ret C.int) error {
 		return nil
 	}
 
-	return &PloopErr{c: int(ret), s: C.GoString(C.ploop_get_last_error())}
+	return &Err{c: int(ret), s: C.GoString(C.ploop_get_last_error())}
 }
