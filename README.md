@@ -31,4 +31,6 @@ After installing OpenVZ, you might need to run:
 
 ## Usage
 
-For examples of how to use the package, see [ploop_test.go](ploop_test.go).
+This package is used by Docker ploop graphdriver, see https://github.com/kolyshkin/docker/tree/ploop/daemon/graphdriver/ploop
+
+For primitive examples of how to use the package, see [ploop_test.go](ploop_test.go).
