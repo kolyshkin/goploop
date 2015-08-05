@@ -173,9 +173,9 @@ func (d Ploop) Mount(p *MountParam) (string, error) {
 	defer cfree(a.mount_data)
 
 	a.flags = C.int(p.Flags)
-	a.ro = bool2cint(p.Readonly)
-	a.fsck = bool2cint(p.Fsck)
-	a.quota = bool2cint(p.Quota)
+	a.ro = boolToC(p.Readonly)
+	a.fsck = boolToC(p.Fsck)
+	a.quota = boolToC(p.Quota)
 
 	ret := C.ploop_mount_image(d.d, &a)
 	if ret == 0 {
@@ -197,7 +197,7 @@ func (d Ploop) Resize(size uint64, offline bool) error {
 	var p C.struct_ploop_resize_param
 
 	p.size = convertSize(size)
-	p.offline_resize = bool2cint(offline)
+	p.offline_resize = boolToC(offline)
 
 	ret := C.ploop_resize_image(d.d, &p)
 	return mkerr(ret)
