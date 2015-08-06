@@ -4,8 +4,7 @@ import "strings"
 import "os/exec"
 import "sync"
 
-// #cgo CFLAGS: -D_GNU_SOURCE
-// #cgo LDFLAGS: -lploop -lxml2 -lrt
+// #cgo pkg-config: --static ploop
 // #include <ploop/libploop.h>
 import "C"
 
