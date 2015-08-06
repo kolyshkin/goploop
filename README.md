@@ -1,4 +1,4 @@
-# goploop
+# goploop [![GoDoc](https://godoc.org/github.com/kolyshkin/goploop?status.png)](https://godoc.org/github.com/kolyshkin/goploop)
 
 This is a Go wrapper for [libploop](https://github.com/kolyshkin/ploop/tree/master/lib),
 a C library to manage ploop.
