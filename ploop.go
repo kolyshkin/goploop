@@ -107,12 +107,21 @@ func ImageModeString(m ImageMode) string {
 	return "<unknown>"
 }
 
+// CreateFlags is a type for CreateParam.Flags
+type CreateFlags uint
+
+// Possible values for CreateFlags
+const (
+	NoLazy CreateFlags = C.PLOOP_CREATE_NOLAZY
+)
+
 // CreateParam is a set of parameters for a newly created ploop
 type CreateParam struct {
-	Size uint64 // image size, in kilobytes (FS size is about 10% smaller)
-	Mode ImageMode
-	File string // path to and a file name for base delta image
-	CLog uint   // cluster block size log (6 to 15, default 11)
+	Size  uint64      // image size, in kilobytes (FS size is about 10% smaller)
+	Mode  ImageMode   // image mode
+	File  string      // path to and a file name for base delta image
+	CLog  uint        // cluster block size log (6 to 15, default 11)
+	Flags CreateFlags // flags
 }
 
 // Create creates a ploop image and its DiskDescriptor.xml
@@ -134,6 +143,7 @@ func Create(p *CreateParam) error {
 		// 2^11 = 2048 sectors, 2048*512 = 1M
 		a.blocksize = 1 << p.CLog
 	}
+	a.flags = C.uint(p.Flags)
 	a.image = C.CString(p.File)
 	defer cfree(a.image)
 	a.fstype = C.CString("ext4")
