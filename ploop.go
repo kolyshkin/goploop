@@ -79,8 +79,8 @@ const (
 	Raw          ImageMode = C.PLOOP_RAW_MODE
 )
 
-// StringToImageMode converts a string to ImageMode value
-func StringToImageMode(s string) (ImageMode, error) {
+// ParseImageMode converts a string to ImageMode value
+func ParseImageMode(s string) (ImageMode, error) {
 	switch strings.ToLower(s) {
 	case "expanded":
 		return Expanded, nil
@@ -93,8 +93,8 @@ func StringToImageMode(s string) (ImageMode, error) {
 	}
 }
 
-// ImageModeString converts an ImageMode value to string
-func ImageModeString(m ImageMode) string {
+// String converts an ImageMode value to string
+func (m ImageMode) String() string {
 	switch m {
 	case Expanded:
 		return "Expanded"
