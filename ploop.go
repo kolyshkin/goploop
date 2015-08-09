@@ -201,6 +201,18 @@ func (d Ploop) Umount() error {
 	return mkerr(ret)
 }
 
+// UmountByDevice unmounts the ploop filesystem and dismantles the device.
+// Unlike Umount(), this is a lower-level function meaning it can be less
+// safe and should generally not be used.
+func UmountByDevice(dev string) error {
+	cdev := C.CString(dev)
+	defer cfree(cdev)
+
+	ret := C.ploop_umount(cdev, nil)
+
+	return mkerr(ret)
+}
+
 // Resize changes the ploop size. Online resize is recommended.
 func (d Ploop) Resize(size uint64, offline bool) error {
 	var p C.struct_ploop_resize_param
