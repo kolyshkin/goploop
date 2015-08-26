@@ -75,7 +75,7 @@ func TestCreate(t *testing.T) {
 	if e != nil {
 		abort("humanize.ParseBytes: can't parse %s: %s", size, e)
 	}
-	p.Size = s
+	p.Size = s / 1024
 	p.File = baseDelta
 
 	e = Create(&p)
@@ -116,6 +116,7 @@ func resize(t *testing.T, size string, offline bool) {
 	if e != nil {
 		t.Fatalf("humanize.ParseBytes: can't parse %s: %s", size, e)
 	}
+	s = s / 1024
 
 	e = d.Resize(s, offline)
 	if e != nil {
