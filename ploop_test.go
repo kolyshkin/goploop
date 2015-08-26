@@ -338,3 +338,28 @@ func cleanup() {
 func TestCleanup(t *testing.T) {
 	cleanup()
 }
+
+func BenchmarkMountUmount(b *testing.B) {
+	b.StopTimer()
+	prepare("tmp-bench")
+	create()
+	open()
+	mnt := "mnt"
+	e := os.Mkdir(mnt, 0755)
+	chk(e)
+	p := MountParam{Target: mnt, Readonly: true}
+
+	b.StartTimer()
+	for n := 0; n < b.N; n++ {
+		_, e := d.Mount(&p)
+		if e != nil {
+			b.Fatalf("Mount: %s", e)
+		}
+		e = d.Umount()
+		if e != nil {
+			b.Fatalf("Umount: %s", e)
+		}
+	}
+	b.StopTimer()
+	cleanup()
+}
