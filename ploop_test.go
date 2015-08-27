@@ -51,7 +51,7 @@ func prepare(dir string) {
 	err = os.Chdir(test_dir)
 	chk(err)
 
-	SetVerboseLevel(255)
+	SetVerboseLevel(NoStdout)
 	SetLogLevel(1)
 	SetLogFile("ploop.log")
 }
@@ -342,6 +342,7 @@ func TestCleanup(t *testing.T) {
 func BenchmarkMountUmount(b *testing.B) {
 	b.StopTimer()
 	prepare("tmp-bench")
+	SetVerboseLevel(NoStdout)
 	create()
 	open()
 	mnt := "mnt"
