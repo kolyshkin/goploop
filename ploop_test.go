@@ -364,3 +364,81 @@ func BenchmarkMountUmount(b *testing.B) {
 	b.StopTimer()
 	cleanup()
 }
+
+func BenchmarkIsMounted(b *testing.B) {
+	b.StopTimer()
+	prepare("tmp-bench")
+	SetVerboseLevel(NoStdout)
+	create()
+	open()
+	mnt := "mnt"
+	e := os.Mkdir(mnt, 0755)
+	chk(e)
+	p := MountParam{Target: mnt, Readonly: true}
+	_, e = d.Mount(&p)
+	if e != nil {
+		b.Fatalf("Mount: %s", e)
+	}
+
+	b.StartTimer()
+	for n := 0; n < b.N; n++ {
+		_, e := d.IsMounted()
+		if e != nil {
+			b.Fatalf("IsMounted: %s", e)
+		}
+	}
+	b.StopTimer()
+	cleanup()
+}
+
+func BenchmarkFSInfo(b *testing.B) {
+	b.StopTimer()
+	prepare("tmp-bench")
+	SetVerboseLevel(NoStdout)
+	create()
+	open()
+	mnt := "mnt"
+	e := os.Mkdir(mnt, 0755)
+	chk(e)
+	p := MountParam{Target: mnt, Readonly: true}
+	_, e = d.Mount(&p)
+	if e != nil {
+		b.Fatalf("Mount: %s", e)
+	}
+
+	b.StartTimer()
+	for n := 0; n < b.N; n++ {
+		_, e := FSInfo("DiskDescriptor.xml")
+		if e != nil {
+			b.Fatalf("FSInfo: %s", e)
+		}
+	}
+	b.StopTimer()
+	cleanup()
+}
+
+func BenchmarkImageInfo(b *testing.B) {
+	b.StopTimer()
+	prepare("tmp-bench")
+	SetVerboseLevel(NoStdout)
+	create()
+	open()
+	mnt := "mnt"
+	e := os.Mkdir(mnt, 0755)
+	chk(e)
+	p := MountParam{Target: mnt, Readonly: true}
+	_, e = d.Mount(&p)
+	if e != nil {
+		b.Fatalf("Mount: %s", e)
+	}
+
+	b.StartTimer()
+	for n := 0; n < b.N; n++ {
+		_, e := d.ImageInfo()
+		if e != nil {
+			b.Fatalf("ImageInfo: %s", e)
+		}
+	}
+	b.StopTimer()
+	cleanup()
+}

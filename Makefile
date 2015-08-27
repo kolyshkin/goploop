@@ -10,6 +10,6 @@ test:
 	go test -v .
 
 bench:
-	go test -v -run=XXX -bench=. -benchtime=60s
+	go test -v -run=XXX -bench=. -benchtime=10s
 
 .PHONY: all build test bench
