@@ -227,7 +227,7 @@ func (d Ploop) Resize(size uint64, offline bool) error {
 // Snapshot creates a ploop snapshot, returning its uuid
 func (d Ploop) Snapshot() (string, error) {
 	var p C.struct_ploop_snapshot_param
-	var uuid, err = UUID()
+	uuid, err := UUID()
 	if err != nil {
 		return "", err
 	}
