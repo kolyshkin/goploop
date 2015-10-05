@@ -1,6 +1,3 @@
-CGO_LDFLAGS	:= -l:libploop.a
-export CGO_LDFLAGS
-
 all: build
 
 build:
