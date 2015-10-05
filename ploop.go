@@ -69,6 +69,7 @@ func (d Ploop) Close() {
 	C.ploop_close_dd(d.d)
 }
 
+// ImageMode is a type for CreateParam.Mode field
 type ImageMode int
 
 // Possible values for ImageMode
@@ -256,11 +257,11 @@ func (d Ploop) SwitchSnapshot(uuid string) error {
 	return mkerr(ret)
 }
 
-// Possible values for SwitchSnapshotExtended flags argument
+// SwitchFlag is a type for SwitchSnapshotExtended.Flags
 type SwitchFlag uint
 
 const (
-	// SkipDestroy, if set, modifies the behavior of
+	// SkipDestroy flag, if set, modifies the behavior of
 	// SwitchSnapshotExtended to not delete the old top delta, but
 	// make it a snapshot and return its uuid. Without this flag,
 	// old top delta (i.e. data modified since the last snapshot)
@@ -310,9 +311,10 @@ func (d Ploop) DeleteSnapshot(uuid string) error {
 	return mkerr(ret)
 }
 
+// ReplaceFlag is a type for ReplaceParam.Flags field
 type ReplaceFlag int
 
-// Possible values for ReplaceParam.flags
+// Possible values for ReplaceParam.Flags field
 const (
 	// KeepName renames the new file to old file name after replace;
 	// note that if this option is used the old file is removed.
