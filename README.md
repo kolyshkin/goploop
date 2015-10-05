@@ -32,12 +32,7 @@ After installing OpenVZ, you might need to run:
 ## Building
 
 If you are going to build a binary that uses this package statically,
-i.e. you have something like `--ldflags '-extldflags "-static"'` or
-`--gccgoflags "-static"` in your `go build` command line, make sure
-to add `static` build tag, too, otherwise the linker will fail.
-Example:
-
-    go build --ldflags '-extldflags "-static"' -tags static
+you need to add `static` build tag to your `go build` command.
 
 ## Usage
 
