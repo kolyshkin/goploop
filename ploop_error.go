@@ -4,6 +4,7 @@ package ploop
 import "C"
 import "fmt"
 
+// Err contains a ploop error
 type Err struct {
 	c int
 	s string
@@ -57,6 +58,7 @@ const (
 	E_NOSNAP
 )
 
+// ErrCodes is a map of ploop numerical error codes to their short names
 var ErrCodes = []string{
 	E_CREAT:           "E_CREAT",
 	E_DEVICE:          "E_DEVICE",
