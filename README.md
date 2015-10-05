@@ -32,7 +32,10 @@ After installing OpenVZ, you might need to run:
 ## Building
 
 If you are going to build a binary that uses this package statically,
-you need to add `static` build tag to your `go build` command.
+you need to add `static_build` build tag to your `go build` command,
+such as:
+
+   go build -tags static_build
 
 ## Usage
 
