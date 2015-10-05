@@ -5,18 +5,19 @@ package ploop
 import (
 	"bufio"
 	"fmt"
-	"github.com/dustin/go-humanize"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"testing"
+
+	"github.com/dustin/go-humanize"
 )
 
 var (
-	old_pwd  string
-	test_dir string
-	d        Ploop
-	snap     string
+	oldPwd  string
+	testDir string
+	d       Ploop
+	snap    string
 )
 
 const baseDelta = "root.hdd"
@@ -42,13 +43,13 @@ func chk(err error) {
 func prepare(dir string) {
 	var err error
 
-	old_pwd, err = os.Getwd()
+	oldPwd, err = os.Getwd()
 	chk(err)
 
-	test_dir, err = ioutil.TempDir(old_pwd, dir)
+	testDir, err = ioutil.TempDir(oldPwd, dir)
 	chk(err)
 
-	err = os.Chdir(test_dir)
+	err = os.Chdir(testDir)
 	chk(err)
 
 	SetVerboseLevel(NoStdout)
@@ -326,11 +327,11 @@ func cleanup() {
 		}
 		d.Close()
 	}
-	if old_pwd != "" {
-		os.Chdir(old_pwd)
+	if oldPwd != "" {
+		os.Chdir(oldPwd)
 	}
-	if test_dir != "" {
-		os.RemoveAll(test_dir)
+	if testDir != "" {
+		os.RemoveAll(testDir)
 	}
 }
 
